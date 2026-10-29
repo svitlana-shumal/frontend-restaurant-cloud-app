@@ -1,0 +1,147 @@
+@use 'app/shared/styles/abstracts/colors' as color;
+
+.card {
+  padding: 18px 16px;
+  border-radius: 12px;
+  background: color.$neutral-0;
+}
+
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin-bottom: 14px;
+}
+
+.title {
+  margin: 0;
+  color: color.$neutral-900;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.submitted {
+  background: color.$green-100;
+  color: color.$green-800;
+}
+
+.pending {
+  background: color.$orange-100;
+  color: color.$orange-600;
+}
+
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px 12px;
+  min-height: 62px;
+  padding: 8px 0;
+  border-bottom: 1px solid color.$neutral-100;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.initial {
+  display: grid;
+  place-items: center;
+  background: color.$green-100;
+  color: color.$green-800;
+  font-size: 16px;
+}
+
+.name,
+.qty,
+.price {
+  margin: 0;
+  color: color.$neutral-900;
+  font-size: 14px;
+}
+
+.name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.qty {
+  white-space: nowrap;
+}
+
+.price {
+  min-width: 62px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 18px 0;
+  color: color.$neutral-600;
+  font-size: 14px;
+}
+
+.subtotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 14px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid color.$neutral-100;
+  color: color.$neutral-900;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@media (max-width: 420px) {
+  .card {
+    padding: 16px 12px;
+  }
+
+  .item {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .price {
+    grid-column: 2 / -1;
+    justify-self: end;
+    min-width: auto;
+    margin-top: -6px;
+  }
+
+  .name {
+    align-self: end;
+  }
+
+  .qty {
+    align-self: end;
+  }
+}

@@ -1,0 +1,132 @@
+<main class="page">
+  @if (loading()) {
+    <p class="page-message" role="status">Loading group pre-order…</p>
+  } @else if (loadError()) {
+    <section class="page-state" role="alert">
+      <h1>Group Pre-Order</h1>
+      <p>{{ loadError() }}</p>
+      <button class="secondary-button" type="button" (click)="loadGroupOrder()">Try again</button>
+    </section>
+  } @else if (invite()) {
+    @let groupInvite = invite()!;
+    <header class="page-header">
+      <div class="title-row">
+        <h1>Group Pre-Order</h1>
+        <span class="order-status">{{ statusLabel() }}</span>
+      </div>
+
+      <ul class="reservation-details" aria-label="Reservation details">
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" />
+            <circle cx="12" cy="10" r="2.5" />
+          </svg>
+          <span>{{ groupInvite.LocationAddress }}</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M16 3v4M8 3v4M3 10h18" />
+          </svg>
+          <time>{{ groupInvite.StartTime | date: 'MMM d, y' }}</time>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+          <span>
+            {{ groupInvite.StartTime | date: 'h:mm a' }} –
+            {{ groupInvite.EndTime | date: 'h:mm a' }}
+          </span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>{{ guestCount() }} of {{ groupInvite.MaxGuestCount }} guests</span>
+        </li>
+      </ul>
+    </header>
+
+    @if (pendingCount() > 0) {
+      <p class="pending-notice">
+        {{ pendingCount() }}
+        {{ pendingCount() === 1 ? 'participant hasn’t' : 'participants haven’t' }} submitted
+        their cart yet — their dishes won’t be included in the order.
+      </p>
+    }
+
+    <ul class="participants" aria-label="Group order participants">
+      @for (person of participants(); track person.id) {
+        <li>
+          <app-participant-card
+            [participant]="person"
+            [isMe]="person.id === ownerSessionId()"
+          />
+        </li>
+      }
+    </ul>
+
+    @if (!hasAnyDishes()) {
+      <p class="empty-state">Participants haven’t added any dishes yet</p>
+    }
+
+    <section class="consolidated-order" aria-labelledby="consolidated-title">
+      <h2 id="consolidated-title">Consolidated pre-order</h2>
+      @if (consolidatedOrder().items.length > 0) {
+        <ul class="consolidated-items">
+          @for (item of consolidatedOrder().items; track item.dish.id) {
+            <li>
+              <span>{{ item.dish.name }} × {{ item.quantity }}</span>
+              <span>{{ item.dish.price * item.quantity | currency }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty-state">No submitted dishes to include in the order.</p>
+      }
+    </section>
+
+    <footer class="order-footer">
+      <p class="grand-total">
+        <span>Grand Total</span>
+        <strong>{{ consolidatedOrder().total | currency }}</strong>
+      </p>
+      @if (!isReadOnly()) {
+        <button
+          class="submit-button"
+          type="button"
+          [disabled]="!canSubmit()"
+          (click)="openSubmitDialog()"
+        >
+          Submit Pre-Order
+        </button>
+      }
+    </footer>
+  }
+
+  @if (submitDialogOpen()) {
+    <app-modal title="Submit Pre-Order" (closed)="closeSubmitDialog()">
+      <p>Submit the consolidated pre-order to the restaurant?</p>
+      <div modal-actions class="dialog-actions">
+        <button
+          class="secondary-button"
+          type="button"
+          [disabled]="submitting()"
+          (click)="closeSubmitDialog()"
+        >
+          Cancel
+        </button>
+        <button
+          class="submit-button dialog-submit"
+          type="button"
+          [disabled]="submitting()"
+          (click)="submitPreOrder()"
+        >
+          {{ submitting() ? 'Submitting…' : 'Submit' }}
+        </button>
+      </div>
+    </app-modal>
+  }
+</main>
